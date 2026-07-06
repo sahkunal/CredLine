@@ -1,47 +1,44 @@
+
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { scoreToTier, type BadgeTier } from "@/lib/utils";
+import { Connection, PublicKey } from "@solana/web3.js";
+import { SOLANA_RPC_ENDPOINT } from "@/lib/anchor/program-ids";
+import { deriveBadgeAccountPda } from "@/lib/anchor/pda";
+import { decodeBadgeAccount, DecodedBadgeAccount } from "@/lib/anchor/decode";
 
-export interface BadgeAccountData {
-  tier: BadgeTier;
-  mintDate: string | null;
-  compositeScoreAtMint: number | null;
-  totalContractsAtMint: number | null;
-  totalEarnedAtMint: number | null;
+export type BadgeTier = "bronze" | "silver" | "gold" | "platinum";
+const TIER_LABELS: BadgeTier[] = ["bronze", "silver", "gold", "platinum"];
+
+export interface BadgeAccountData extends DecodedBadgeAccount {
+  tierLabel: BadgeTier;
 }
 
-/**
- * TODO: replace mock with real fetch via FlowBadge program:
- *   const [pda] = deriveBadgeAccountPda(wallet.publicKey)
- *   program.account.badgeAccount.fetchNullable(pda)
- */
-async function fetchBadge(walletAddress: string): Promise<BadgeAccountData> {
-  await new Promise((r) => setTimeout(r, 350));
-  return {
-    tier: "gold",
-    mintDate: "2026-04-12",
-    compositeScoreAtMint: 705,
-    totalContractsAtMint: 10,
-    totalEarnedAtMint: 18_200_000_000,
-  };
+const readConnection = new Connection(SOLANA_RPC_ENDPOINT, "confirmed");
+
+async function fetchBadge(wallet: PublicKey): Promise<BadgeAccountData | null> {
+  const [pda] = deriveBadgeAccountPda(wallet);
+  const info = await readConnection.getAccountInfo(pda);
+  if (!info) return null; // not minted yet
+  const decoded = decodeBadgeAccount(info.data);
+  return { ...decoded, tierLabel: TIER_LABELS[decoded.tier] ?? "bronze" };
 }
 
-export function useBadge() {
+export function useBadge(walletAddress?: string) {
   const { publicKey } = useWallet();
-  const address = publicKey?.toBase58();
+  const address = walletAddress ?? publicKey?.toBase58();
 
   return useQuery({
     queryKey: ["badge", address],
-    queryFn: () => fetchBadge(address as string),
+    queryFn: () => fetchBadge(new PublicKey(address as string)),
     enabled: !!address,
   });
 }
 
 export const ALL_TIERS: { tier: BadgeTier; minScore: number }[] = [
   { tier: "bronze", minScore: 400 },
-  { tier: "silver", minScore: 550 },
-  { tier: "gold", minScore: 700 },
-  { tier: "platinum", minScore: 850 },
+  { tier: "silver", minScore: 600 },
+  { tier: "gold", minScore: 800 },
+  { tier: "platinum", minScore: 900 },
 ];

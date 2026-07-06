@@ -2,45 +2,32 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { Connection, PublicKey } from "@solana/web3.js";
+import { SOLANA_RPC_ENDPOINT } from "@/lib/anchor/program-ids";
+import { deriveLoanAccountPda, deriveLendingPoolPda } from "@/lib/anchor/pda";
+import {
+  decodeLoanAccount,
+  decodeLendingPool,
+  DecodedLoanAccount,
+  DecodedLendingPool,
+} from "@/lib/anchor/decode";
 
-export interface LoanAccountData {
-  amount: number; // raw USDC units
-  dueTimestamp: number;
-  issuedTimestamp: number;
-  repaid: boolean;
+const readConnection = new Connection(SOLANA_RPC_ENDPOINT, "confirmed");
+
+async function fetchActiveLoan(
+  worker: PublicKey
+): Promise<DecodedLoanAccount | null> {
+  const [pda] = deriveLoanAccountPda(worker);
+  const info = await readConnection.getAccountInfo(pda);
+  if (!info) return null; // no active loan (also true right after repay, since repay closes the account)
+  return decodeLoanAccount(info.data);
 }
 
-export interface PoolStats {
-  totalLiquidity: number;
-  totalBorrowed: number;
-  utilizationRate: number;
-  poolMinScore: number;
-}
-
-/**
- * TODO: replace mock with real fetch via FlowLend program:
- *   const [pda] = deriveLoanAccountPda(wallet.publicKey)
- *   program.account.loanAccount.fetchNullable(pda)
- */
-async function fetchActiveLoan(walletAddress: string): Promise<LoanAccountData | null> {
-  await new Promise((r) => setTimeout(r, 350));
-  const now = Math.floor(Date.now() / 1000);
-  return {
-    amount: 500_000_000,
-    issuedTimestamp: now - 3 * 86400,
-    dueTimestamp: now + 4 * 86400,
-    repaid: false,
-  };
-}
-
-async function fetchPoolStats(): Promise<PoolStats> {
-  await new Promise((r) => setTimeout(r, 300));
-  return {
-    totalLiquidity: 250_000_000_000,
-    totalBorrowed: 142_000_000_000,
-    utilizationRate: 0.568,
-    poolMinScore: 400,
-  };
+async function fetchPoolStats(): Promise<DecodedLendingPool | null> {
+  const [pda] = deriveLendingPoolPda();
+  const info = await readConnection.getAccountInfo(pda);
+  if (!info) return null; // pool hasn't been initialized yet
+  return decodeLendingPool(info.data);
 }
 
 export function useLoan() {
@@ -49,7 +36,7 @@ export function useLoan() {
 
   return useQuery({
     queryKey: ["loan", address],
-    queryFn: () => fetchActiveLoan(address as string),
+    queryFn: () => fetchActiveLoan(publicKey as PublicKey),
     enabled: !!address,
   });
 }

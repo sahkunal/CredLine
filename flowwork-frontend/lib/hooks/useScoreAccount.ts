@@ -2,44 +2,24 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { Connection, PublicKey } from "@solana/web3.js";
+import { SOLANA_RPC_ENDPOINT } from "@/lib/anchor/program-ids";
+import { deriveScoreAccountPda } from "@/lib/anchor/pda";
+import { decodeScoreAccount, DecodedScoreAccount } from "@/lib/anchor/decode";
 
-export interface ScoreAccountData {
-  composite: number;
-  paymentScore: number;
-  defaultPenalty: number;
-  totalContracts: number;
-  totalEarned: number; // raw USDC units (6 decimals)
-  kycVerified: boolean;
-  kycProvider: string | null;
-  asWorker: { composite: number; totalContracts: number } | null;
-  asClient: { composite: number; totalContracts: number } | null;
-  history: { timestamp: number; composite: number }[];
+export interface ScoreAccountData extends DecodedScoreAccount {
+  history: null; // see limitation note above
 }
 
-/**
- * TODO: replace mock with real fetch via FlowScore program:
- *   const [pda] = deriveScoreAccountPda(wallet.publicKey)
- *   const account = await program.account.scoreAccount.fetch(pda)
- */
-async function fetchScoreAccount(walletAddress: string): Promise<ScoreAccountData> {
-  await new Promise((r) => setTimeout(r, 400));
+const readConnection = new Connection(SOLANA_RPC_ENDPOINT, "confirmed");
 
-  const now = Math.floor(Date.now() / 1000);
-  return {
-    composite: 742,
-    paymentScore: 680,
-    defaultPenalty: 20,
-    totalContracts: 14,
-    totalEarned: 24_810_000_000,
-    kycVerified: false,
-    kycProvider: null,
-    asWorker: { composite: 742, totalContracts: 11 },
-    asClient: { composite: 610, totalContracts: 3 },
-    history: Array.from({ length: 12 }).map((_, i) => ({
-      timestamp: now - (11 - i) * 7 * 86400,
-      composite: 420 + Math.round(i * 28 + Math.sin(i) * 15),
-    })),
-  };
+async function fetchScoreAccount(
+  wallet: PublicKey
+): Promise<ScoreAccountData | null> {
+  const [pda] = deriveScoreAccountPda(wallet);
+  const info = await readConnection.getAccountInfo(pda);
+  if (!info) return null; // no payments yet — account doesn't exist (init_if_needed)
+  return { ...decodeScoreAccount(info.data), history: null };
 }
 
 export function useScoreAccount(walletAddress?: string) {
@@ -48,7 +28,7 @@ export function useScoreAccount(walletAddress?: string) {
 
   return useQuery({
     queryKey: ["scoreAccount", address],
-    queryFn: () => fetchScoreAccount(address as string),
+    queryFn: () => fetchScoreAccount(new PublicKey(address as string)),
     enabled: !!address,
   });
 }

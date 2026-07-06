@@ -35,19 +35,19 @@ export type BadgeTier = "none" | "bronze" | "silver" | "gold" | "platinum";
 
 /** Map a composite score (0-1000) to a badge tier */
 export function scoreToTier(score: number): BadgeTier {
-  if (score >= 850) return "platinum";
-  if (score >= 700) return "gold";
-  if (score >= 550) return "silver";
+  if (score >= 900) return "platinum";
+  if (score >= 800) return "gold";
+  if (score >= 600) return "silver";
   if (score >= 400) return "bronze";
   return "none";
 }
-
+ 
 /** Next tier threshold info for progress displays */
 export function nextTierInfo(score: number): { tier: BadgeTier; threshold: number } | null {
   if (score < 400) return { tier: "bronze", threshold: 400 };
-  if (score < 550) return { tier: "silver", threshold: 550 };
-  if (score < 700) return { tier: "gold", threshold: 700 };
-  if (score < 850) return { tier: "platinum", threshold: 850 };
+  if (score < 600) return { tier: "silver", threshold: 600 };
+  if (score < 800) return { tier: "gold", threshold: 800 };
+  if (score < 900) return { tier: "platinum", threshold: 900 };
   return null;
 }
 
