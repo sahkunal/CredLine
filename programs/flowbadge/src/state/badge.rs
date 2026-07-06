@@ -9,4 +9,6 @@ pub struct BadgeAccount {
     pub member_since: i64,
     pub tier: u8,                // 0=Bronze 1=Silver 2=Gold 3=Platinum
     pub bump: u8,
+    pub successful_payments: u32,
+    pub loans_repaid: u32,
 }

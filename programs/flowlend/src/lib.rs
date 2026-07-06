@@ -11,6 +11,9 @@ use instructions::{
     borrow::*,
     repay::*,
     initialize_pool::*,
+    liquidate_defaulted_loan::*,
+    deposit::*,
+    withdraw::*,
 };
 
 #[program]
@@ -26,4 +29,15 @@ pub mod flowlend {
     pub fn initialize_pool(ctx: Context<InitializePool>, minimum_score: u32, initial_liquidity: u64) -> Result<()> {
     ctx.accounts.process(minimum_score, initial_liquidity, &ctx.bumps)
 }
+    pub fn liquidate_defaulted_loan(ctx: Context<LiquidateDefaultedLoan>) -> Result<()> {
+        ctx.accounts.process()
+     }
+
+     pub fn deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
+        ctx.accounts.process(amount)
+}
+
+    pub fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
+        ctx.accounts.process(amount)
+    }
 }

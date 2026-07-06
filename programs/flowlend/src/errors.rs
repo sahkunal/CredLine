@@ -19,4 +19,7 @@ pub enum FlowLendError {
 
     #[msg("Arithmetic overflow.")]
     Overflow,
+
+    #[msg("Loan is not yet past its due date.")]
+    LoanNotYetOverdue,
 }

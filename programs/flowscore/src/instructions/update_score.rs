@@ -1,8 +1,6 @@
 use anchor_lang::prelude::*;
 use crate::state::ScoreAccount;
 
-// Instruction 1: called via CPI from FlowPay's execute_flowpay
-// Updates BOTH payer and payee scores on a successful payment
 
 #[derive(Accounts)]
 pub struct UpdateScoreOnPayment<'info> {
