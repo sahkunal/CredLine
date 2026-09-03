@@ -11,6 +11,8 @@ export type ContractRole = "payer" | "payee";
 export type ContractStatus = "active" | "due" | "cancelled";
 
 export interface FlowPayContract extends DecodedFlowpay {
+  history: any;
+  nextPayoutTimestamp: number;
   pda: string;
   role: ContractRole;
   status: ContractStatus;

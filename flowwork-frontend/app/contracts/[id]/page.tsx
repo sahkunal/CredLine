@@ -46,9 +46,9 @@ export default function ContractDetailPage() {
       <GlassCard className="p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <AddressDisplay address={contract.payer} showAvatar showCopy />
+            <AddressDisplay address={contract.payer.toBase58()} showAvatar showCopy />
             <span className="text-muted-foreground">&rarr;</span>
-            <AddressDisplay address={contract.payee} showAvatar showCopy />
+            <AddressDisplay address={contract.payee.toBase58()} showAvatar showCopy />
           </div>
           <span
             className={cn(
@@ -113,7 +113,7 @@ export default function ContractDetailPage() {
               </tr>
             </thead>
             <tbody>
-              {contract.history.map((h) => (
+              {contract.history.map((h: (typeof contract.history)[number]) => (
                 <tr key={h.signature} className="border-b border-white/5 last:border-0">
                   <td className="py-3 text-muted-foreground">{formatRelativeTime(h.timestamp)}</td>
                   <td className="py-3 font-mono text-foreground">{formatUsdc(h.amount)}</td>
