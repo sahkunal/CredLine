@@ -9,9 +9,10 @@ import { decodeFlowpay, DecodedFlowpay } from "@/lib/anchor/decode";
 
 export type ContractRole = "payer" | "payee";
 export type ContractStatus = "active" | "due" | "cancelled";
-export type PayFrequency = "weekly" | "biweekly" | "monthly";
+export type PayFrequency = "daily" | "weekly" | "biweekly" | "monthly"
 
 export const FREQUENCY_SECONDS: Record<PayFrequency, number> = {
+  daily: 24 * 60 * 60,
   weekly: 7 * 24 * 60 * 60,
   biweekly: 14 * 24 * 60 * 60,
   monthly: 30 * 24 * 60 * 60,
@@ -78,4 +79,8 @@ export function useContract(pda: string) {
   const { data: contracts, ...rest } = useContracts();
   const contract = contracts?.find((c) => c.pda === pda);
   return { data: contract, ...rest };
+}
+
+function computeStatus(decoded: DecodedFlowpay): any {
+  throw new Error("Function not implemented.");
 }
