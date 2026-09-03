@@ -9,19 +9,18 @@ import { decodeFlowpay, DecodedFlowpay } from "@/lib/anchor/decode";
 
 export type ContractRole = "payer" | "payee";
 export type ContractStatus = "active" | "due" | "cancelled";
+export type PayFrequency = "weekly" | "biweekly" | "monthly";
+
+export const FREQUENCY_SECONDS: Record<PayFrequency, number> = {
+  weekly: 7 * 24 * 60 * 60,
+  biweekly: 14 * 24 * 60 * 60,
+  monthly: 30 * 24 * 60 * 60,
+};
 
 export interface FlowPayContract extends DecodedFlowpay {
-  history: any;
-  nextPayoutTimestamp: number;
   pda: string;
   role: ContractRole;
   status: ContractStatus;
-}
-
-function computeStatus(c: DecodedFlowpay): ContractStatus {
-  if (!c.active) return "cancelled";
-  const now = Math.floor(Date.now() / 1000);
-  return now >= Number(c.nextPayout) ? "due" : "active";
 }
 
 async function fetchContracts(

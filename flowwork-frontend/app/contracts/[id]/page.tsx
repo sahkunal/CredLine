@@ -6,8 +6,15 @@ import { ArrowLeft, Play, X, RotateCcw } from "lucide-react";
 import { GlassCard } from "@/components/glass-card";
 import { AddressDisplay } from "@/components/address-display";
 import { CountdownTimer } from "@/components/countdown-timer";
-import { useContract } from "@/lib/hooks/useContracts";
 import { formatUsdc, formatRelativeTime, cn } from "@/lib/utils";
+import { useContract, FREQUENCY_SECONDS } from "@/lib/hooks/useContracts";
+
+
+function formatFrequency(seconds: bigint): string {
+  const match = (Object.entries(FREQUENCY_SECONDS) as [string, number][])
+    .find(([, s]) => s === Number(seconds));
+  return match ? match[0] : `every ${Math.round(Number(seconds) / 86400)} days`;
+}
 
 export default function ContractDetailPage() {
   const params = useParams<{ id: string }>();
@@ -69,11 +76,11 @@ export default function ContractDetailPage() {
           </div>
           <div>
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Frequency</div>
-            <div className="text-lg text-foreground capitalize">{contract.frequency}</div>
+            <div className="text-lg text-foreground capitalize">{formatFrequency(contract.frequency)}</div>
           </div>
           <div>
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Next payout</div>
-            <CountdownTimer targetTimestamp={contract.nextPayoutTimestamp} className="text-lg" />
+            <CountdownTimer targetTimestamp={Number(contract.nextPayout)} className="text-lg" />
           </div>
         </div>
 
@@ -99,36 +106,11 @@ export default function ContractDetailPage() {
       </GlassCard>
 
       <GlassCard className="p-6">
-        <h2 className="font-display font-semibold text-base mb-4">Payment history</h2>
-        {contract.history.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-6 text-center">No payments yet.</p>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground border-b border-white/5">
-                <th className="pb-2.5 font-medium">Date</th>
-                <th className="pb-2.5 font-medium">Amount</th>
-                <th className="pb-2.5 font-medium">Score delta</th>
-                <th className="pb-2.5 font-medium">Signature</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contract.history.map((h: (typeof contract.history)[number]) => (
-                <tr key={h.signature} className="border-b border-white/5 last:border-0">
-                  <td className="py-3 text-muted-foreground">{formatRelativeTime(h.timestamp)}</td>
-                  <td className="py-3 font-mono text-foreground">{formatUsdc(h.amount)}</td>
-                  <td className="py-3">
-                    <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-success/10 text-success">
-                      +{h.scoreDelta}
-                    </span>
-                  </td>
-                  <td className="py-3 font-mono text-muted-foreground">{h.signature}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </GlassCard>
+  <h2 className="font-display font-semibold text-base mb-4">Payment history</h2>
+  <p className="text-sm text-muted-foreground py-6 text-center">
+    Payment history coming soon.
+  </p>
+</GlassCard>
 
       {confirmAction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
