@@ -26,7 +26,7 @@ export default function BadgesPage() {
     );
   }
 
-  const currentTierIndex = badge ? ALL_TIERS.findIndex((t) => t.tier === badge.tier) : -1;
+const currentTierIndex = badge ? ALL_TIERS.findIndex((t) => t.tier === badge.tierLabel) : -1;
   const eligibleForNext =
     score && currentTierIndex < ALL_TIERS.length - 1
       ? score.composite >= ALL_TIERS[currentTierIndex + 1].minScore
@@ -71,8 +71,8 @@ export default function BadgesPage() {
                   tier={tierInfo.tier}
                   locked={!isUnlocked}
                   requiredScore={tierInfo.minScore}
-                  mintDate={isUnlocked && i === currentTierIndex ? badge?.mintDate ?? undefined : undefined}
-                  compositeScore={isUnlocked && i === currentTierIndex ? badge?.compositeScoreAtMint ?? undefined : undefined}
+                  mintDate={isUnlocked && i === currentTierIndex && badge?.memberSince ? new Date(Number(badge.memberSince) * 1000).toLocaleDateString() : undefined}
+compositeScore={isUnlocked && i === currentTierIndex ? badge?.compositeScore ?? undefined : undefined}
                   onClick={() => isUnlocked && i === currentTierIndex && setSelected(tierInfo.tier)}
                 />
               </motion.div>
@@ -106,10 +106,10 @@ export default function BadgesPage() {
               </button>
               <BadgeCard
                 tier={selected}
-                mintDate={badge.mintDate ?? undefined}
-                compositeScore={badge.compositeScoreAtMint ?? undefined}
-                totalContracts={badge.totalContractsAtMint ?? undefined}
-                totalEarned={badge.totalEarnedAtMint ? formatUsdc(badge.totalEarnedAtMint) : undefined}
+               mintDate={badge.memberSince ? new Date(Number(badge.memberSince) * 1000).toLocaleDateString() : undefined}
+compositeScore={badge.compositeScore ?? undefined}
+totalContracts={badge.totalContracts ?? undefined}
+totalEarned={badge.totalEarned ? formatUsdc(badge.totalEarned) : undefined}
               />
             </motion.div>
           </motion.div>
