@@ -8,7 +8,7 @@ No credit bureau. No bank approval. Just proof of work.
 
 ---
 
-## The Problem
+## The Problem described below
 
 Freelancers and gig workers get paid, but that payment history disappears into nothing. There's no system that says *"this person has been paid reliably for 18 months and always repays what they borrow."* Traditional finance doesn't see them. DeFi doesn't either.
 
