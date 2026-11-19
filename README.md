@@ -1,20 +1,20 @@
 # cred_line 🔗
 
-> On-chain credit infrastructure for the gig economy — built on Solana.
+> **On-chain credit infrastructure for the gig economy, powered by Solana.**
 
-cred_line is a suite of Solana programs that lets freelancers and gig workers build a verifiable financial identity from their work history. Every payment received, every contract completed, every loan repaid — it all compounds into a score that unlocks real financial access, right on-chain.
+**CredLine** is a suite of Solana programs designed to help freelancers and gig workers build a verifiable, on-chain financial identity through their work and payment history. Every payment received, contract completed, and loan repaid contributes to a growing credit profile, creating opportunities to access financial services and decentralized lending.
 
-No credit bureau. No bank approval. Just proof of work.
-
----
-
-## The Problem described below
-
-Freelancers and gig workers get paid, but that payment history disappears into nothing. There's no system that says *"this person has been paid reliably for 18 months and always repays what they borrow."* Traditional finance doesn't see them. DeFi doesn't either.
-
-cred_line fixes that.
+**No traditional credit history. No banking barriers. Just verifiable financial activity on-chain.**
 
 ---
+
+## The Problem
+
+Freelancers and gig workers generate consistent income, complete contracts, and make repayments, yet their financial reliability often goes unrecognized. Their payment history is scattered across platforms, leaving them without a unified credit identity that proves their financial credibility.
+
+Traditional financial institutions often lack the data to assess these workers, while most DeFi lending protocols rely on collateral rather than demonstrated financial behavior.
+
+**CredLine bridges this gap** by transforming real financial activity into verifiable on-chain credit profiles, making financial reputation portable, transparent, and accessible.
 
 ## How It Works
 
